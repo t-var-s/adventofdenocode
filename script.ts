@@ -5,13 +5,16 @@ const options = {
     first_day: 1, last_day: 25, 
     day_id_prefix: 'day_'
 }
-async function getAdvent(){
+async function getAdvent():Promise<void>{
     for(let d = options.first_day; d <= options.last_day; d++){
         const day_id = dayIdFromNumber(d);
         const solution_path = `./${day_id}/${options.solution_filename}`;
         try{ await Deno.readFile(solution_path) }
         catch(error){
-            if(error.message.indexOf('No such file') === -1){ return false; }
+            if(error.message.indexOf('No such file') === -1){ 
+                console.log(error); 
+                break;
+            }
             const day_challenge = await getChallenge(day_id);
             if(!day_challenge){ 
                 console.log('---> No challenge available yet');
@@ -37,16 +40,14 @@ async function getChallenge(day_id:string){
         return text;
     }catch(error) { console.error(error); return false;}
 }
-function dayIdFromNumber(d:number){
+function dayIdFromNumber(d:number):string{
     return options.day_id_prefix + (d < 10 ? '0' : '') + d;
 }
-function numberFromDayId(day_id:string){
+function numberFromDayId(day_id:string):number{
     const prefix = options.day_id_prefix;
-    return day_id.replace(prefix + '0', '').replace(prefix, '');
+    return parseInt(day_id.replace(prefix + '0', '').replace(prefix, ''));
 }
 function commentFromChallenge(challenge:string){
-    const text = `/* ${challenge.replaceAll('---', '\n')}*/`;
-
-    return text;
+    return `/* ${challenge.replaceAll('---', '\n')}*/`;
 }
 getAdvent();
