@@ -1,5 +1,6 @@
 # Advent of Code 2021 with Deno
 Deno learning project for the 2021 #AdventOfCode
+![Advent of Code 2021 with Deno](https://repository-images.githubusercontent.com/433220540/2c8142d3-9400-4f22-b77b-86e97269bd23)
 
 ```
 deno run --allow-net --allow-read --allow-write script.ts [YOUR SESSION COOKIE HERE]
