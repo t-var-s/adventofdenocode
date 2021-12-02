@@ -37,7 +37,7 @@ async function getPuzzleInput(url:string, refresh=false){
         return await download();
     }
 }
-function getDepthEntriesFromInput(input:string):number[]{
+function getEntriesFromInput(input:string):number[]{
     return input.split('\n').map(entry=>parseInt(entry));
 }
 function countIncreases(entries:number[]){
@@ -59,7 +59,7 @@ function getRunningSums(entries:number[]){
 }
 const test_entries = [ 199, 200, 208, 210, 200, 207, 240, 269, 260, 263 ];
 const puzzle_input = await getPuzzleInput('https://adventofcode.com/2021/day/1/input');
-const depth_entries = puzzle_input ? getDepthEntriesFromInput(puzzle_input) : [];
+const depth_entries = puzzle_input ? getEntriesFromInput(puzzle_input) : [];
 console.log(depth_entries);
 console.log(
     'submission 1: ', 
