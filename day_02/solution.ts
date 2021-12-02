@@ -20,19 +20,7 @@ forward 2 adds 2 to your horizontal position, a total of 15.
 After following these instructions, you would have a horizontal position of 15 and a depth of 10. (Multiplying these together produces 150.)
 Calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 */
-async function getPuzzleInput():Promise<string|boolean>{
-    const input_filepath = './input.txt';
-    try{ 
-        const saved_text = await Deno.readTextFile(input_filepath); 
-        return saved_text;
-    }catch(error){
-        console.log(error);
-        return false;
-    }
-}
-function getEntriesFromInput(input:string):string[]{
-    return input.split('\n');
-}
+import { getPuzzleInput, getEntriesFromInput } from "../tools.ts";
 interface Instruction{ direction:string, units:number }
 function getInstructionFromEntry(entry:string):Instruction{
     const entry_arguments = entry.split(' ');
@@ -81,34 +69,34 @@ function getCorrectedTravelFromInstructions(instructions:Instruction[]){
 async function testFirstChallenge(){
     const entries = [ 'forward 5', 'down 5', 'forward 8', 'up 3', 'down 8', 'forward 2' ];
     const instructions = await getInstructions(entries);
-    if(typeof instructions === 'boolean') return false;
+    if(typeof instructions === 'boolean'){ return false; }
     const travel = getTravelFromInstructions(instructions);
-    if(typeof travel === 'boolean') return false;
+    if(typeof travel === 'boolean'){ return false; }
     const multiplication = travel.horizontal_position * travel.depth;
     return multiplication === 150;
 }
 async function solveFirstChallenge(){
     const instructions = await getInstructions();
-    if(typeof instructions === 'boolean') return false;
+    if(typeof instructions === 'boolean'){ return false; }
     const travel = getTravelFromInstructions(instructions);
-    if(typeof travel === 'boolean') return false;
+    if(typeof travel === 'boolean'){ return false; }
     const multiplication = travel.horizontal_position * travel.depth;
     return multiplication;
 }
 async function testSecondChallenge(){
     const entries = [ 'forward 5', 'down 5', 'forward 8', 'up 3', 'down 8', 'forward 2' ];
     const instructions = await getInstructions(entries);
-    if(typeof instructions === 'boolean') return false;
+    if(typeof instructions === 'boolean'){ return false; }
     const travel = getCorrectedTravelFromInstructions(instructions);
-    if(typeof travel === 'boolean') return false;
+    if(typeof travel === 'boolean'){ return false; }
     const multiplication = travel.horizontal_position * travel.depth;
     return multiplication === 900;
 }
 async function solveSecondChallenge(){
     const instructions = await getInstructions();
-    if(typeof instructions === 'boolean') return false;
+    if(typeof instructions === 'boolean'){ return false; }
     const travel = getCorrectedTravelFromInstructions(instructions);
-    if(typeof travel === 'boolean') return false;
+    if(typeof travel === 'boolean'){ return false; }
     const multiplication = travel.horizontal_position * travel.depth;
     return multiplication;
 }
