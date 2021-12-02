@@ -27,8 +27,9 @@ async function getAdvent():Promise<void>{
                 break; 
             }
             const comment = commentFromChallenge(day);
+            const solution_text = comment + '\n' + extraSolutionCode();
             await Deno.mkdir('./' + day_id);
-            await Deno.writeTextFile(solution_path, comment);
+            await Deno.writeTextFile(solution_path, solution_text);
             if(day.input){
                 await Deno.writeTextFile(input_path, day.input);
             }
@@ -65,5 +66,8 @@ function numberFromDayId(day_id:string):number{
 function commentFromChallenge(day:AdventDay):string{
     const comment_text = day.challenge ? day.challenge : '';
     return `/* ${comment_text.replaceAll('---', '\n')}*/`;
+}
+function extraSolutionCode(){
+    return 'import { getPuzzleInput, getEntriesFromInput } from "../tools.ts'; 
 }
 getAdvent();
