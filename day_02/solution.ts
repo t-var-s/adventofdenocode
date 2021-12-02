@@ -63,6 +63,21 @@ function getTravelFromInstructions(instructions:Instruction[]){
     }, travel);
     return travel;
 }
+function getCorrectedTravelFromInstructions(instructions:Instruction[]){
+    let travel = { horizontal_position:0, depth:0, aim:0 };
+    travel = instructions.reduce((travel, i)=>{
+        switch(i.direction){
+            case 'down': travel.aim += i.units; break;
+            case 'up': travel.aim -= i.units; break;
+            case 'forward': 
+            travel.horizontal_position += i.units; 
+            travel.depth += (travel.aim * i.units); 
+            break;
+        }
+        return travel
+    }, travel);
+    return travel;
+}
 async function testFirstChallenge(){
     const entries = [ 'forward 5', 'down 5', 'forward 8', 'up 3', 'down 8', 'forward 2' ];
     const instructions = await getInstructions(entries);
@@ -80,6 +95,26 @@ async function solveFirstChallenge(){
     const multiplication = travel.horizontal_position * travel.depth;
     return multiplication;
 }
+async function testSecondChallenge(){
+    const entries = [ 'forward 5', 'down 5', 'forward 8', 'up 3', 'down 8', 'forward 2' ];
+    const instructions = await getInstructions(entries);
+    if(typeof instructions === 'boolean') return false;
+    const travel = getCorrectedTravelFromInstructions(instructions);
+    if(typeof travel === 'boolean') return false;
+    const multiplication = travel.horizontal_position * travel.depth;
+    return multiplication === 900;
+}
+async function solveSecondChallenge(){
+    const instructions = await getInstructions();
+    if(typeof instructions === 'boolean') return false;
+    const travel = getCorrectedTravelFromInstructions(instructions);
+    if(typeof travel === 'boolean') return false;
+    const multiplication = travel.horizontal_position * travel.depth;
+    return multiplication;
+}
 const first_submission_correct = await testFirstChallenge();
 const first_submission = await solveFirstChallenge();
 console.log('submission 1: ', first_submission, first_submission_correct);
+const second_submission_correct = await testSecondChallenge();
+const second_submission = await solveSecondChallenge();
+console.log('submission 2: ', second_submission, second_submission_correct);
