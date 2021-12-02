@@ -1,4 +1,4 @@
-# adventofcode2021
+# Advent of Code 2021 with Deno
 Deno learning project for the 2021 #AdventOfCode
 
 ```
