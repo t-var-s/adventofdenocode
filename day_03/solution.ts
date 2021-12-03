@@ -29,8 +29,7 @@ function getListOfBitsFromEntries(entries:string[]):number[][]{
     });
     return list_of_bits;
 }
-function calculateFrequentBits(list_of_bits:number[][], most=true):number[]{
-    const tiebreaker_bit = 0;
+function calculateFrequentBits(list_of_bits:number[][], most=true, tiebreaker_bit=1):number[]{
     let count_ones = list_of_bits[0].map(_bit=>0);
     count_ones = list_of_bits.reduce((count_ones, bits)=>{
         bits.forEach((bit, index)=>{
@@ -50,7 +49,13 @@ function calculateFrequentBits(list_of_bits:number[][], most=true):number[]{
 function convertToDecimal(bits:number[]):number{
     return parseInt(bits.map(bit=>bit.toString()).join(''), 2)
 }
-
+function filterBitByBit(current_index=0, list_of_bits:number[][], most=true, tiebreaker_bit=1):number[][]{
+    const target_bits = calculateFrequentBits(list_of_bits, most, tiebreaker_bit);
+    list_of_bits = list_of_bits.filter(bits=>bits[current_index]==target_bits[current_index]);
+    if(list_of_bits.length == 1 || current_index + 1 == list_of_bits[0].length ){ return list_of_bits; }
+    current_index ++;
+    return filterBitByBit(current_index, list_of_bits, most, tiebreaker_bit);
+}
 function testFirstChallenge(){
     const entries = [
     '00100', '11110', '10110', '10111', '10101', '01111', 
@@ -67,11 +72,35 @@ async function solveFirstChallenge(){
     if(typeof input === 'boolean'){ return false; }
     const entries = getEntriesFromInput(input);
     const list_of_bits = getListOfBitsFromEntries(entries);
-    const gamma = calculateFrequentBits(list_of_bits);
+    const gamma = calculateFrequentBits(list_of_bits, true);
     const epsilon = calculateFrequentBits(list_of_bits, false);
     const multiplication =  convertToDecimal(gamma) * convertToDecimal(epsilon);
     return multiplication;
 }
-const first_submission = await solveFirstChallenge();
+function testSecondChallenge(){
+    const entries = [
+    '00100', '11110', '10110', '10111', '10101', '01111', 
+    '00111', '11100', '10000', '11001', '00010', '01010'
+    ];
+    const list_of_bits = getListOfBitsFromEntries(entries);
+    const oxygen_bits = filterBitByBit(0, list_of_bits, true, 1)[0];
+    const co2_bits = filterBitByBit(0, list_of_bits, false, 0)[0];
+    const multiplication =  convertToDecimal(oxygen_bits) * convertToDecimal(co2_bits);
+    return multiplication === 230;
+}
+async function solveSecondChallenge(){
+    const input = await getPuzzleInput();
+    if(typeof input === 'boolean'){ return false; }
+    const entries = getEntriesFromInput(input);
+    const list_of_bits = getListOfBitsFromEntries(entries);
+    const oxygen_bits = filterBitByBit(0, list_of_bits, true, 1)[0];
+    const co2_bits = filterBitByBit(0, list_of_bits, false, 0)[0];
+    const multiplication =  convertToDecimal(oxygen_bits) * convertToDecimal(co2_bits);
+    return multiplication;
+}
 const first_submission_correct = testFirstChallenge();
+const first_submission = await solveFirstChallenge();
 console.log('submission 1: ', first_submission, first_submission_correct);
+const second_submission_correct = testSecondChallenge();
+const second_submission = await solveSecondChallenge();
+console.log('submission 2: ', second_submission, second_submission_correct);
