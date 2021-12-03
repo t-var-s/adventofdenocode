@@ -56,11 +56,7 @@ function filterBitByBit(current_index=0, list_of_bits:number[][], most=true, tie
     current_index ++;
     return filterBitByBit(current_index, list_of_bits, most, tiebreaker_bit);
 }
-function testFirstChallenge(){
-    const entries = [
-    '00100', '11110', '10110', '10111', '10101', '01111', 
-    '00111', '11100', '10000', '11001', '00010', '01010'
-    ];
+function testFirstChallenge(entries:string[]){
     const list_of_bits = getListOfBitsFromEntries(entries);
     const gamma = calculateFrequentBits(list_of_bits);
     const epsilon = calculateFrequentBits(list_of_bits, false);
@@ -77,11 +73,7 @@ async function solveFirstChallenge(){
     const multiplication =  convertToDecimal(gamma) * convertToDecimal(epsilon);
     return multiplication;
 }
-function testSecondChallenge(){
-    const entries = [
-    '00100', '11110', '10110', '10111', '10101', '01111', 
-    '00111', '11100', '10000', '11001', '00010', '01010'
-    ];
+function testSecondChallenge(entries:string[]){
     const list_of_bits = getListOfBitsFromEntries(entries);
     const oxygen_bits = filterBitByBit(0, list_of_bits, true, 1)[0];
     const co2_bits = filterBitByBit(0, list_of_bits, false, 0)[0];
@@ -98,9 +90,13 @@ async function solveSecondChallenge(){
     const multiplication =  convertToDecimal(oxygen_bits) * convertToDecimal(co2_bits);
     return multiplication;
 }
-const first_submission_correct = testFirstChallenge();
+const test_entries = [
+'00100', '11110', '10110', '10111', '10101', '01111', 
+'00111', '11100', '10000', '11001', '00010', '01010'
+];
+const first_submission_correct = testFirstChallenge(test_entries);
 const first_submission = await solveFirstChallenge();
 console.log('submission 1: ', first_submission, first_submission_correct);
-const second_submission_correct = testSecondChallenge();
+const second_submission_correct = testSecondChallenge(test_entries);
 const second_submission = await solveSecondChallenge();
 console.log('submission 2: ', second_submission, second_submission_correct);

@@ -68,6 +68,21 @@ function commentFromChallenge(day:AdventDay):string{
     return `/* ${comment_text.replaceAll('---', '\n')}*/`;
 }
 function extraSolutionCode(){
-    return "import { getPuzzleInput, getEntriesFromInput } from '../tools.ts';"; 
+    const code = `
+import { getPuzzleInput, getEntriesFromInput } from '../tools.ts';
+//TODO
+function testFirstChallenge(entries:string[]){
+    return 1 === 1;
+}
+const test_entries = [
+];
+const first_submission_correct = testFirstChallenge(test_entries);
+const first_submission = false; //await solveFirstChallenge();
+console.log('submission 1: ', first_submission, first_submission_correct);
+const second_submission_correct = testSecondChallenge(test_entries);
+const second_submission = false; //await solveSecondChallenge();
+console.log('submission 2: ', second_submission, second_submission_correct);
+`; 
+    return code;
 }
 getAdvent();
