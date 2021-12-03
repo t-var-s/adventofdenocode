@@ -68,6 +68,6 @@ function commentFromChallenge(day:AdventDay):string{
     return `/* ${comment_text.replaceAll('---', '\n')}*/`;
 }
 function extraSolutionCode(){
-    return 'import { getPuzzleInput, getEntriesFromInput } from "../tools.ts'; 
+    return "import { getPuzzleInput, getEntriesFromInput } from '../tools.ts';"; 
 }
 getAdvent();
