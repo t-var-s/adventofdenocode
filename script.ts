@@ -74,13 +74,28 @@ import { getPuzzleInput, getEntriesFromInput } from '../tools.ts';
 function testFirstChallenge(entries:string[]){
     return 1 === 1;
 }
+async function solveFirstChallenge(){
+    const input = await getPuzzleInput();
+    if(typeof input === 'boolean'){ return false; }
+    const entries = getEntriesFromInput(input);
+    return 1;
+}
+function testSecondChallenge(entries:string[]){
+    return 2 === 2;
+}
+async function solveSecondChallenge(){
+    const input = await getPuzzleInput();
+    if(typeof input === 'boolean'){ return false; }
+    const entries = getEntriesFromInput(input);
+    return 2;
+}
 const test_entries = [
 ];
 const first_submission_correct = testFirstChallenge(test_entries);
-const first_submission = false; //await solveFirstChallenge();
+const first_submission = await solveFirstChallenge();
 console.log('submission 1: ', first_submission, first_submission_correct);
 const second_submission_correct = testSecondChallenge(test_entries);
-const second_submission = false; //await solveSecondChallenge();
+const second_submission = await solveSecondChallenge();
 console.log('submission 2: ', second_submission, second_submission_correct);
 `; 
     return code;
