@@ -41,11 +41,6 @@ function getEntriesFromInput(input:string):number[]{
     return input.split('\n').map(entry=>parseInt(entry));
 }
 function countIncreases(entries:number[]){
-/*     const count = entries.reduce((count, entry, index)=>{
-        if(index == 0){ return count; }
-        count = entry > entries[index - 1] ? count + 1 : count;
-        return count;
-    }, 0);  */
     const count = entries.filter((entry, index)=>{
         if(index == 0){ return false; }
         return entry > entries[index - 1];
