@@ -91,7 +91,8 @@ async function solvePart2(){
 
     return 2;
 }
-const test_input = \`
+const test_input = 
+\`
 
 \`;
 const part1_correct = await testPart1(test_input);

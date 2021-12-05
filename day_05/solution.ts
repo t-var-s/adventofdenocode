@@ -39,29 +39,86 @@ Consider only horizontal and vertical lines. At how many points do at least two 
 
 import { puzzle } from '../puzzle.ts';
 
+interface Vent{ count:number, point:string };
+
+function tracePoints(pair1:string, pair2:string, diagonals=false):string[]{
+    const c1 = pair1.split(',').map(point=>parseInt(point));
+    const c2 = pair2.split(',').map(point=>parseInt(point));
+    if(!diagonals && c1[0] != c2[0] && c1[1] != c2[1]){
+        return [];
+    }
+    const delta = c1.map((v, i) => c2[i] - v);
+    const distance = Math.max(...delta.map(v => Math.abs(v)));
+    const direction = delta.map(v => v / distance);
+    const line = [...Array(distance + 1)]
+    .map((_, i) => c1.map((v, j) => v + direction[j] * i));
+    const points = line.map(coordinates=>coordinates.join(','));
+    return points;
+}
+function listAllPoints(pairs_of_points:string[][], diagonals=false):string[]{
+    const lines = pairs_of_points.reduce((lines, pair_of_points)=>{
+        const line = tracePoints(pair_of_points[0], pair_of_points[1], diagonals);
+        line.forEach(point=>lines.push(point));
+        return lines;
+    }, [])
+    return lines;
+}
+function listVents(points:string[]):Vent[]{
+    const unique_points = [...new Set(points)];
+    const vents = unique_points.map(unique_point=>{
+        const vent = { 
+            count: points.filter(point=>point==unique_point).length, 
+            point: unique_point 
+        };
+        return vent;
+    });
+    return vents;
+}
+function countOverlappingVents(vents:Vent[], above=1):number{
+    const overlapping_vents = vents.filter(vent=>vent.count>above);
+    return overlapping_vents.length;
+}
+
 async function testPart1(input:string){
     const puzzle_input = await puzzle.parseInput(input);
-
-    return false;
+    const pairs_of_points = puzzle_input.blocks[0];
+    const all_points = listAllPoints(pairs_of_points);
+    const vents = listVents(all_points);
+    return countOverlappingVents(vents) == 5;
 }
 async function solvePart1(){
     const puzzle_input = await puzzle.parseInput();
-
-    return 1;
+    const pairs_of_points = puzzle_input.blocks[0];
+    const all_points = listAllPoints(pairs_of_points);
+    const vents = listVents(all_points);
+    return countOverlappingVents(vents);
 }
 async function testPart2(input:string){
     const puzzle_input = await puzzle.parseInput(input);
-
-    return false;
+    const pairs_of_points = puzzle_input.blocks[0];
+    const all_points = listAllPoints(pairs_of_points, true);//accept diagonals
+    const vents = listVents(all_points);
+    return countOverlappingVents(vents) == 12;
 }
 async function solvePart2(){
     const puzzle_input = await puzzle.parseInput();
-
-    return 2;
+    const pairs_of_points = puzzle_input.blocks[0];
+    const all_points = listAllPoints(pairs_of_points, true);//accept diagonals
+    const vents = listVents(all_points);
+    return countOverlappingVents(vents);
 }
-const test_input = `
+const test_input =
+`0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2`;
 
-`;
 const part1_correct = await testPart1(test_input);
 const part1 = await solvePart1();
 console.log(',.-~=/* part 1: ', part1, part1_correct);
