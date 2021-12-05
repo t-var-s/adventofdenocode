@@ -89,7 +89,7 @@ async function solveSecondChallenge(){
     const entries = getEntriesFromInput(input);
     return 2;
 }
-const test_entries = [
+const test_entries:string[] = [
 ];
 const first_submission_correct = testFirstChallenge(test_entries);
 const first_submission = await solveFirstChallenge();
