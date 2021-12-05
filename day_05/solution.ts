@@ -39,7 +39,7 @@ Consider only horizontal and vertical lines. At how many points do at least two 
 
 import { puzzle } from '../puzzle.ts';
 
-interface Vent{ count:number, point:string };
+interface Vent{ count:number, point:string }
 
 function tracePoints(pair1:string, pair2:string, diagonals=false):string[]{
     const c1 = pair1.split(',').map(point=>parseInt(point));
