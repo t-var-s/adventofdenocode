@@ -52,15 +52,19 @@ To guarantee victory against the giant squid, figure out which board will win fi
 */
 
 import { puzzle } from '../puzzle.ts';
+
 interface Bingo{ winning_board: number[][], last_draw: number }
 
 function getBingo(draws:string[], boards:string[][][], first=true):Bingo{
     const bingo:Bingo = { winning_board:[], last_draw: 0 };
     draws.forEach(draw=>{
         if(first && bingo.winning_board.length > 0){ return true; }
+        if(boards.length == 0){ return true; }
         bingo.last_draw = parseInt(draw);
         boards = boards.map(board=>markBoard(board, draw));
-        bingo.winning_board = findWinner(boards);
+        const game = findWinnerAndLoosers(boards);
+        bingo.winning_board = game.winner
+        boards = game.loosers;
     })
     return bingo;
 }
@@ -71,7 +75,8 @@ function markBoard(board:string[][], draw:string):string[][]{
     });
     return board;
 }
-function findWinner(boards:string[][][]):number[][]{
+function findWinnerAndLoosers(boards:string[][][]){
+    const loosing_boards:string[][][] = [];
     const winning_boards = boards.filter(board=>{
         const x_rows = Array(board.length);
         const x_columns = Array(board.length);
@@ -87,7 +92,9 @@ function findWinner(boards:string[][][]):number[][]{
         });
         const winning_rows = x_rows.filter(r=>r==board.length)
         const winning_columns = x_columns.filter(c=>c==board.length)
-        return (winning_rows.length > 0 || winning_columns.length > 0);
+        const win = (winning_rows.length > 0 || winning_columns.length > 0);
+        if(!win){ loosing_boards.push(board); }
+        return win;
     });
     let winning_board:number[][] = [];
     if(winning_boards.length > 0){
@@ -95,7 +102,7 @@ function findWinner(boards:string[][][]):number[][]{
             return value == 'X' ? 0 : parseInt(value);
         }));
     }
-    return winning_board;
+    return {winner: winning_board, loosers: loosing_boards};
 }
 function scoreBingo(bingo:Bingo):number{
     const score = bingo.winning_board.reduce((score, line)=>{
@@ -105,7 +112,7 @@ function scoreBingo(bingo:Bingo):number{
     return score * bingo.last_draw;
 }
 
-async function testFirstChallenge(input:string){
+async function testPart1(input:string){
     const puzzle_input = await puzzle.parseInput(input);
     const first_block = puzzle_input.blocks.shift();
     if(first_block === undefined){ return false; }
@@ -113,7 +120,7 @@ async function testFirstChallenge(input:string){
     const score = scoreBingo(bingo);
     return score === 4512;
 }
-async function solveFirstChallenge(){
+async function solvePart1(){
     const puzzle_input = await puzzle.parseInput();
     const first_block = puzzle_input.blocks.shift();
     if(first_block === undefined){ return false; }
@@ -121,12 +128,21 @@ async function solveFirstChallenge(){
     const score = scoreBingo(bingo);
     return score;
 }
-function testSecondChallenge(input:string){
-    return false;
+async function testPart2(input:string){
+    const puzzle_input = await puzzle.parseInput(input);
+    const first_block = puzzle_input.blocks.shift();
+    if(first_block === undefined){ return false; }
+    const bingo = getBingo(first_block[0], puzzle_input.blocks, false);
+    const score = scoreBingo(bingo);
+    return score === 1924;
 }
-async function solveSecondChallenge(){
+async function solvePart2(){
     const puzzle_input = await puzzle.parseInput();
-    return 2;
+    const first_block = puzzle_input.blocks.shift();
+    if(first_block === undefined){ return false; }
+    const bingo = getBingo(first_block[0], puzzle_input.blocks, false);
+    const score = scoreBingo(bingo);
+    return score;
 }
 const test_input = 
 `7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
@@ -149,9 +165,9 @@ const test_input =
 22 11 13  6  5
  2  0 12  3  7`;
 
-const first_submission_correct = await testFirstChallenge(test_input);
-const first_submission = await solveFirstChallenge();
-console.log('submission 1: ', first_submission, first_submission_correct);
-const second_submission_correct = testSecondChallenge(test_input);
-const second_submission = await solveSecondChallenge();
-console.log('submission 2: ', second_submission, second_submission_correct);
+const part1_correct = await testPart1(test_input);
+const part1 = await solvePart1();
+console.log(',.-~=/* part 1: ', part1, part1_correct);
+const part2_correct = await testPart2(test_input);
+const part2 = await solvePart2();
+console.log(',.-~=/* part 2: ', part2, part2_correct);

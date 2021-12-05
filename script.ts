@@ -69,34 +69,37 @@ function commentFromChallenge(day:AdventDay):string{
 }
 function extraSolutionCode(){
     const code = `
-import { getPuzzleInput, getEntriesFromInput } from '../tools.ts';
-//TODO
-function testFirstChallenge(entries:string[]){
-    return 1 === 1;
+import { puzzle } from '../puzzle.ts';
+
+async function testPart1(input:string){
+    const puzzle_input = await puzzle.parseInput(input);
+
+    return false;
 }
-async function solveFirstChallenge(){
-    const input = await getPuzzleInput();
-    if(typeof input === 'boolean'){ return false; }
-    const entries = getEntriesFromInput(input);
+async function solvePart1(){
+    const puzzle_input = await puzzle.parseInput();
+
     return 1;
 }
-function testSecondChallenge(entries:string[]){
-    return 2 === 2;
+async function testPart2(input:string){
+    const puzzle_input = await puzzle.parseInput(input);
+
+    return false;
 }
-async function solveSecondChallenge(){
-    const input = await getPuzzleInput();
-    if(typeof input === 'boolean'){ return false; }
-    const entries = getEntriesFromInput(input);
+async function solvePart2(){
+    const puzzle_input = await puzzle.parseInput();
+
     return 2;
 }
-const test_entries:string[] = [
-];
-const first_submission_correct = testFirstChallenge(test_entries);
-const first_submission = await solveFirstChallenge();
-console.log('submission 1: ', first_submission, first_submission_correct);
-const second_submission_correct = testSecondChallenge(test_entries);
-const second_submission = await solveSecondChallenge();
-console.log('submission 2: ', second_submission, second_submission_correct);
+const test_input = \`
+
+\`;
+const part1_correct = await testPart1(test_input);
+const part1 = await solvePart1();
+console.log(',.-~=/* part 1: ', part1, part1_correct);
+const part2_correct = await testPart2(test_input);
+const part2 = await solvePart2();
+console.log(',.-~=/* part 2: ', part2, part2_correct);
 `; 
     return code;
 }
