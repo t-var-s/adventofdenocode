@@ -10,7 +10,7 @@ const options = {
     first_day: 1, last_day: 25, 
     day_id_prefix: 'day_'
 }
-async function getAdvent():Promise<void>{
+const getAdvent = async ():Promise<void> =>{
     for(let d = options.first_day; d <= options.last_day; d++){
         const day_id = dayIdFromNumber(d);
         const solution_path = `./${day_id}/${options.solution_filename}`;
@@ -36,7 +36,7 @@ async function getAdvent():Promise<void>{
         }
     }
 }
-async function getAdventDay(day_id:string):Promise<AdventDay>{
+const getAdventDay = async (day_id:string):Promise<AdventDay> =>{
     const challenge_url = options.base_url + numberFromDayId(day_id);
     const cookie = Deno.args.length > 0 ? Deno.args[0] : '';
     const day:AdventDay = { challenge: false, input: false };
@@ -56,37 +56,38 @@ async function getAdventDay(day_id:string):Promise<AdventDay>{
         return day;
     }catch(error) { console.error(error); return day;}
 }
-function dayIdFromNumber(d:number):string{
+const dayIdFromNumber = (d:number):string =>{
     return options.day_id_prefix + (d < 10 ? '0' : '') + d;
 }
-function numberFromDayId(day_id:string):number{
+const numberFromDayId = (day_id:string):number =>{
     const prefix = options.day_id_prefix;
     return parseInt(day_id.replace(prefix + '0', '').replace(prefix, ''));
 }
-function commentFromChallenge(day:AdventDay):string{
+const commentFromChallenge = (day:AdventDay):string =>{
     const comment_text = day.challenge ? day.challenge : '';
     return `/* ${comment_text.replaceAll('---', '\n')}*/`;
 }
-function extraSolutionCode(){
+const  extraSolutionCode = () =>{
     const code = `
 import { puzzle } from '../puzzle.ts';
 
-async function testPart1(input:string){
+const testPart1 = async (input:string)=>boolean {
     const puzzle_input = await puzzle.parseInput(input);
 
     return false;
 }
-async function solvePart1(){
+const solvePart1 = async ()=>number {
     const puzzle_input = await puzzle.parseInput();
+    console.log(puzzle_input.blocks);
 
     return 1;
 }
-async function testPart2(input:string){
+const testPart2 = async (input:string)=>number {
     const puzzle_input = await puzzle.parseInput(input);
 
     return false;
 }
-async function solvePart2(){
+const solvePart2 = async solvePart2()=>number {
     const puzzle_input = await puzzle.parseInput();
 
     return 2;
