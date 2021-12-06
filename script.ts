@@ -69,6 +69,7 @@ const commentFromChallenge = (day:AdventDay):string =>{
 }
 const  extraSolutionCode = () =>{
     const code = `
+import { log } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
 const testPart1 = async (input:string)=>boolean {
@@ -78,7 +79,7 @@ const testPart1 = async (input:string)=>boolean {
 }
 const solvePart1 = async ()=>number {
     const puzzle_input = await puzzle.parseInput();
-    console.log(puzzle_input.blocks);
+    log(puzzle_input.blocks);
 
     return 1;
 }
@@ -98,10 +99,10 @@ const test_input =
 \`;
 const part1_correct = await testPart1(test_input);
 const part1 = await solvePart1();
-console.log(',.-~=/* part 1: ', part1, part1_correct);
+log(',.-~=/* part 1: ', part1, part1_correct);
 const part2_correct = await testPart2(test_input);
 const part2 = await solvePart2();
-console.log(',.-~=/* part 2: ', part2, part2_correct);
+log(',.-~=/* part 2: ', part2, part2_correct);
 `; 
     return code;
 }
