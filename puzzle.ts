@@ -25,7 +25,7 @@ export const puzzle:Puzzle = {
             if(entry.length == 0){ return false; }
             const separator = [' -> ', ' ', ','].filter(s=>entry.split(s).length > 1);
             const columns:string[] = [];
-            if(separator.length > 1){
+            if(separator.length > 0){
                 entry.split(separator[0])
                 .filter(column=>column!='')
                 .forEach(column=>columns.push(column));
