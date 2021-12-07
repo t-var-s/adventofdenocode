@@ -1,7 +1,13 @@
 import { format } from "https://deno.land/std@0.117.0/datetime/mod.ts";
-export const log = (anything:any):string =>{
+export const log = (...anything:any):string =>{
     const timestamp = format(new Date(), "HH:mm:ss");
-    console.log(timestamp, anything);
+    if(anything.length > 2){
+        console.log(timestamp, anything[0], anything[1], anything[2]);
+    }else if(anything.length > 1){
+        console.log(timestamp, anything[0], anything[1]);
+    }else{
+        console.log(timestamp, anything[0]);
+    }
     return timestamp;
 }
 export async function getPuzzleInput():Promise<string|boolean>{
