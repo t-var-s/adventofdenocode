@@ -10,6 +10,15 @@ export const log = (...anything:any):string =>{
     }
     return timestamp;
 }
+export const logList = (list:any[]):string =>{
+    const timestamp = format(new Date(), "HH:mm:ss");
+    console.log(timestamp);
+    list.forEach((item, index)=>console.log(`[${index}]`, item));
+    return timestamp;
+}
+export const intval = (text_number:string):number =>{
+    return parseInt(text_number);
+}
 export async function getPuzzleInput():Promise<string|boolean>{
     const input_filepath = './input.txt';
     try{ 

@@ -26,20 +26,71 @@ Determine the horizontal position that the crabs can align to using the least fu
 
 */
 
-import { log } from "../tools.ts";
+import { log, logList, intval } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
+
+interface Crabs{
+    left:number[], 
+    right:number[],
+    from_position:number,
+    max_position:number,
+}
+
+const parseCrabs = (data:string[]):Crabs =>{
+    const crabs:Crabs = { 
+        left: [0], right: [], from_position: 0, max_position: 0
+    };
+    const positions = data.map(intval);
+    crabs.max_position = positions.reduce((length, position)=>{
+        if(position > length){ length = position }
+        return length;
+    }, 0);
+    for(let c=0; c<=crabs.max_position; c++){ crabs.right[c] = 0; }
+    positions.forEach(position=>crabs.right[position]++);
+    return crabs;
+}
+const shiftFromPosition = (crabs:Crabs):Crabs =>{
+    const shift = crabs.right.shift();
+    if(shift === undefined){ return crabs; }
+    crabs.left.shift();
+    crabs.left.unshift(0, shift);
+    crabs.from_position ++;
+    return crabs;
+}
+const totalFuel = (crabs:Crabs):number =>{
+    let fuel = crabs.left.reduce((fuel, count, index)=>fuel+(count*index), 0);
+    fuel = crabs.right.reduce((fuel, count, index)=>fuel+(count*index), fuel);
+    return fuel;
+}
+const findLeastFuel = (crabs:Crabs) =>{
+    const least = { fuel:0, position: 0 }
+    least.fuel = totalFuel(crabs);
+    log(0, least.fuel);
+    for(let position = 1; position <= crabs.max_position; position ++){
+        crabs = shiftFromPosition(crabs);
+        const current_fuel = totalFuel(crabs);
+        log(position, current_fuel);
+        if(current_fuel < least.fuel){ 
+            least.fuel = current_fuel; 
+            least.position = position; 
+        }
+    }
+    return least;
+}
 
 const testPart1 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
-    log(puzzle_input.blocks);
-
-    return false;
+    const crabs = parseCrabs(puzzle_input.blocks[0][0]);
+    const least = findLeastFuel(crabs);
+    return least.position === 2;
 }
 const solvePart1 = async ():Promise<number> =>{
     const puzzle_input = await puzzle.parseInput();
-    log(puzzle_input.blocks);
-
+    const crabs = parseCrabs(puzzle_input.blocks[0][0]);
+    log(crabs);
     return 1;
+    const least = findLeastFuel(crabs);
+    return least.position;
 }
 const testPart2 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
