@@ -69,7 +69,7 @@ const commentFromChallenge = (day:AdventDay):string =>{
 }
 const  extraSolutionCode = () =>{
     const code = `
-import { log } from "../tools.ts";
+import { log, logList, intval } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
 const testPart1 = async (input:string):Promise<boolean> =>{
