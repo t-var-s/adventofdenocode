@@ -61,40 +61,144 @@ In the output values, how many times do digits 1, 4, 7, or 8 appear?
 import { log, logList, intval } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
-const digits = {
-    0:{ a:true, b: true, c: true, d: false, e: true, f: true, g: true },
-    1:{ a:false, b: false, c: true, d: false, e: false, f: true, g: false },
-    2:{ a:true, b: false, c: true, d: true, e: true, f: false, g: true },
-    3:{ a:true, b: false, c: true, d: true, e: false, f: true, g: true },
-    4:{ a:false, b: true, c: true, d: true, e: false, f: true, g: false },
-    5:{ a:true, b: true, c: false, d: true, e: false, f: true, g: true },
-    6:{ a:true, b: true, c: false, d: true, e: true, f: true, g: true },
-    7:{ a:true, b: false, c: true, d: false, e: false, f: true, g: false },
-    8:{ a:true, b: true, c: true, d: true, e: true, f: true, g: true },
-    9:{ a:true, b: true, c: true, d: true, e: false, f: true, g: true },
-};
+class Digits{
+     standard:{ [key:number]:any } = {
+        0: 'abcefg',
+        1: 'cf',
+        2: 'acdeg',
+        3: 'acdfg',
+        4: 'bcdf',
+        5: 'abdfg',
+        6: 'abdefg',
+        7: 'acf',
+        8: 'abcdefg',
+        9: 'abcdfg'
+    };
+    entry_numbers: string[]
+    entry_display: string[]
+    displayed_number = 0
+    numbers:{ [key:string]:number[] } = {}
+    unique_numbers:{ [key:string]:number } = {}
+    solvers:{ [key:number]:string } = {}
+    constructor(entry:string[]){
+        this.initializeStandard();
+        this.entry_numbers = entry[0].split(' ').map(m=>m.split('').sort().join(''));
+        this.entry_display = entry[1].split(' ').map(m=>m.split('').sort().join(''));
+        this.entry_numbers.forEach(entry_number=>{
+            for(let d=0; d<=9; d++){
+                if(this.standard[d].count == entry_number.length){
+                    this.numbers[entry_number] = this.standard[d].same_count;
+                }
+            }
+        });
+        this.unique_numbers = this.findUniqueNumbers();
+        this.applyVisualLogic();
+        this.decodeDisplay();
+    }
+    initializeStandard(){
+        for(let d=0; d<=9; d++){
+            const letters = this.standard[d].split('');
+            this.standard[d] = { 
+                letters: this.standard[d], count: letters.length, same_count: [d] 
+            };
+        }
+        for(let d=0; d<=9; d++){
+            for(let t=0; t<=9; t++){
+                if(t != d && this.standard[t].count == this.standard[d].count){
+                    this.standard[d].same_count.push(t);
+                }
+            }
+        }
+    }
+    findUniqueNumbers(){
+        const unique_numbers = Object.keys(this.numbers)
+        .filter(letters=>this.numbers[letters].length==1)
+        .reduce((unique_numbers:{ [key:string]:number }, unique_letter)=>{
+            unique_numbers[unique_letter] = this.numbers[unique_letter][0];
+            return unique_numbers;
+        }, {});
+        Object.keys(unique_numbers).forEach(key=>{
+            this.solvers[unique_numbers[key]] = key;
+        })
+        return unique_numbers;
+    }
+    filterWrongNumbers(target_numbers:number[], target_letters:string[]){
+        Object.keys(this.numbers).forEach(letters=>{
+            this.numbers[letters] = this.numbers[letters].filter(number=>{
+                if(target_numbers.indexOf(number) === -1){ return true; }
+                const matching_target = target_letters
+                .filter(target_letter=>letters.indexOf(target_letter)>-1);
+                return matching_target.length == target_letters.length;
+            })
+        })
+    }
+    filterNewlySolvedNumbers(){
+        const newly_solved_letters = Object.keys(this.numbers).filter(letters=>{
+            return this.numbers[letters].length == 1 && !this.unique_numbers[letters];
+        })
+        Object.keys(this.numbers).forEach(letters=>{
+            if(this.numbers[letters].length == 1){ return false; }
+            this.numbers[letters] = this.numbers[letters].filter(number=>{
+                const matching_solved = newly_solved_letters.filter(solved_letter=>{
+                    return number == this.numbers[solved_letter][0];
+                })
+                return matching_solved.length === 0;
+            });
+        });
+    }
+    applyVisualLogic(){
+        //find the two letters that 4 has and 1 doesn't
+        const bd_letters = this.solvers[4].split('')
+        .filter(letter=>this.solvers[1].indexOf(letter)===-1);
+        //find 5s, 6s and 9s that don't have both the bd letters and remove them
+        this.filterWrongNumbers([5, 6, 9], bd_letters);
+        //find 0s, 3s, and 9s that don't have all the letters of 7 and remove them
+        this.filterWrongNumbers([0, 3, 9], this.solvers[7].split(''));
+        //find 9s that don't have all the letters of 4 and remove them
+        this.filterWrongNumbers([9], this.solvers[4].split(''));
+        //remove numbers that are now already solved and repeated
+        this.filterNewlySolvedNumbers();
+        this.filterNewlySolvedNumbers();
+    }
+    decodeDisplay(){
+        const decoded_display = this.entry_display.reduce((decoded_display, letters)=>{
+            return decoded_display += this.numbers[letters][0];
+        }, '')
+        this.displayed_number = parseInt(decoded_display);
+    }
+}
+
+const findAnswers = (entries:string[][]) =>{
+    const answers = { count_unique_numbers: 0, output_values_sum: 0 };
+    entries.forEach(entry=>{
+        const digits = new Digits(entry);
+        answers.count_unique_numbers += digits.entry_display
+        .filter(displayed_letters=>digits.unique_numbers[displayed_letters])
+        .length;
+        answers.output_values_sum += digits.displayed_number;
+    });
+    return answers;
+}
 
 const testPart1 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
-    log(puzzle_input.blocks);
-
-    return false;
+    const answers = findAnswers(puzzle_input.blocks[0]);
+    return answers.count_unique_numbers == 26;
 }
 const solvePart1 = async ():Promise<number> =>{
     const puzzle_input = await puzzle.parseInput();
-    log(puzzle_input.blocks);
-
-    return 1;
+    const answers = findAnswers(puzzle_input.blocks[0]);
+    return answers.count_unique_numbers;
 }
 const testPart2 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
-
-    return false;
+    const answers = findAnswers(puzzle_input.blocks[0]);
+    return answers.output_values_sum == 61229;
 }
 const solvePart2 = async ():Promise<number> =>{
     const puzzle_input = await puzzle.parseInput();
-
-    return 2;
+    const answers = findAnswers(puzzle_input.blocks[0]);
+    return answers.output_values_sum;
 }
 const test_input = 
 `be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
