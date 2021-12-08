@@ -61,6 +61,19 @@ In the output values, how many times do digits 1, 4, 7, or 8 appear?
 import { log, logList, intval } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
+const digits = {
+    0:{ a:true, b: true, c: true, d: false, e: true, f: true, g: true },
+    1:{ a:false, b: false, c: true, d: false, e: false, f: true, g: false },
+    2:{ a:true, b: false, c: true, d: true, e: true, f: false, g: true },
+    3:{ a:true, b: false, c: true, d: true, e: false, f: true, g: true },
+    4:{ a:false, b: true, c: true, d: true, e: false, f: true, g: false },
+    5:{ a:true, b: true, c: false, d: true, e: false, f: true, g: true },
+    6:{ a:true, b: true, c: false, d: true, e: true, f: true, g: true },
+    7:{ a:true, b: false, c: true, d: false, e: false, f: true, g: false },
+    8:{ a:true, b: true, c: true, d: true, e: true, f: true, g: true },
+    9:{ a:true, b: true, c: true, d: true, e: false, f: true, g: true },
+};
+
 const testPart1 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
     log(puzzle_input.blocks);
