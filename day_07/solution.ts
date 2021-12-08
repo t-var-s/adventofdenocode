@@ -26,7 +26,7 @@ Determine the horizontal position that the crabs can align to using the least fu
 
 */
 
-import { log, logList, intval } from "../tools.ts";
+import { log, intval } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
 interface Crabs{

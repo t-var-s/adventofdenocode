@@ -58,7 +58,7 @@ In the output values, how many times do digits 1, 4, 7, or 8 appear?
 
 */
 
-import { log, logList, intval } from "../tools.ts";
+import { log } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
 class Digits{

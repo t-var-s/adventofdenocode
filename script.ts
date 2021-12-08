@@ -72,15 +72,22 @@ const  extraSolutionCode = () =>{
 import { log, logList, intval } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
+
+const findAnswers = (entries:string[][]) =>{
+    const answers = {  };
+
+    log(entries);
+
+    return answers;
+}
 const testPart1 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
-    log(puzzle_input.blocks);
+    const answers = findAnswers(puzzle_input.blocks[0]);
 
     return false;
 }
 const solvePart1 = async ():Promise<number> =>{
     const puzzle_input = await puzzle.parseInput();
-    log(puzzle_input.blocks);
 
     return 1;
 }
@@ -101,10 +108,10 @@ const test_input =
 
 const part1_correct = await testPart1(test_input);
 const part1 = await solvePart1();
-log(',.-~=/* part 1: ', part1, part1_correct);
+log('    part 1: ', part1, part1_correct);
 const part2_correct = await testPart2(test_input);
 const part2 = await solvePart2();
-log(',.-~=/* part 2: ', part2, part2_correct);
+log('    part 2: ', part2, part2_correct);
 `; 
     return code;
 }
