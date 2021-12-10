@@ -63,7 +63,6 @@ class Grid{
     }
 }
 
-
 const findAnswers = (entries:string[][]) =>{
     const answers:{ [key:string]:any } = { sum_low_risk_levels: 0 };
     const grid = new Grid(entries);
@@ -75,15 +74,12 @@ const findAnswers = (entries:string[][]) =>{
 const testPart1 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
     const answers = findAnswers(puzzle_input.blocks[0]);
-    log(answers.grid.points);
-    log(answers.grid.low_values);
     return answers.sum_low_risk_levels === 15;
 }
 const solvePart1 = async ():Promise<number> =>{
     const puzzle_input = await puzzle.parseInput();
-    return 1;
     const answers = findAnswers(puzzle_input.blocks[0]);
-    return answers.sum_low_risk_levels;
+    return answers.sum_low_risk_levels;//1674 is too high?
 }
 const testPart2 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
