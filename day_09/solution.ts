@@ -23,8 +23,24 @@ import { puzzle } from '../puzzle.ts';
 class Grid{
     entries:number[][] = []
     points:{ [key:string]:any }[][] = []
-    low_values: number[] = []
+    low_points: { [key:string]:any }[] = []
     constructor(entries:string[][]){
+        this.populatePoints(entries);
+        this.findLowPoints();
+    }
+    n(entries:number[][], from_y:number, from_x:number):number{
+        return from_y > 0 ? entries[from_y-1][from_x] : 99; 
+    }
+    s(entries:number[][], from_y:number, from_x:number):number{
+        return from_y < entries.length - 1 ? entries[from_y+1][from_x] : 99; 
+    }
+    e(entries:number[][], from_y:number, from_x:number):number{
+        return from_x < entries[0].length - 1 ? entries[from_y][from_x+1] : 99; 
+    }
+    w(entries:number[][], from_y:number, from_x:number):number{
+        return from_x > 0 ? entries[from_y][from_x-1] : 99; 
+    }
+    populatePoints(entries:string[][]){
         this.entries = entries.reduce((entries, entry)=>{
             entries.push(entry[0].split('').map(intval));
             return entries;
@@ -34,40 +50,49 @@ class Grid{
             for(let x=0; x<this.entries[0].length; x++){ 
                 this.points[y].push([]);
                 this.points[y][x] = { 
-                    value: this.entries[y][x], n: 99, s: 99, e: 99, w: 99
+                    y: y, x: x, 
+                    value: this.entries[y][x], 
+                    // n: 99, s: 99, e: 99, w: 99,
+                    basin:{}
                 };
             }
         }
+    }
+    findLowPoints(){
         for(let y=0; y<this.entries.length; y++){ 
             for(let x=0; x<this.entries[0].length; x++){ 
-                if(y > 0){//north border
-                    this.points[y][x].n = this.entries[y-1][x]; 
-                }
-                if(y < this.entries.length - 1){//south border
-                    this.points[y][x].s = this.entries[y+1][x];
-                }
-                if(x < this.entries[0].length - 1){//east border
-                    this.points[y][x].e = this.entries[y][x+1];
-                }
-                if(x > 0){//west border
-                    this.points[y][x].w = this.entries[y][x-1]; 
-                }
-                const lower_directions = ['n', 's', 'e', 'w'].filter((direction)=>{
-                    return this.points[y][x][direction] < this.points[y][x].value;
+                const lower_directions = [this.n, this.s, this.w, this.e]
+                .filter((direction)=>{
+                    return (direction(this.entries, y, x) <= this.points[y][x].value);
                 });
                 if(lower_directions.length == 0){
-                    this.low_values.push(this.points[y][x].value);
+                    this.points[y][x].basin.size = 1;
+                    this.points[y][x].basin.center = { y: y, x: x };
+                    this.low_points.push(this.points[y][x]);
                 }
             }
         }
     }
+    measureBasins(){
+        this.low_points = this.low_points.map(this.exploreBasin);
+    }
+    exploreBasin(point:{ [key:string]:any }){
+        if(point.basin.explored){ 
+            return this.points[point.basin.source.y][point.basin.source.x]; 
+        }
+        const where_to = ['n', 's', 'e', 'w'].filter(direction => point[direction] < 9);
+        if(where_to.length === 0){ return point; }
+        return this.points[point.basin.source.y][point.basin.source.x]; 
+    }
 }
 
 const findAnswers = (entries:string[][]) =>{
-    const answers:{ [key:string]:any } = { sum_low_risk_levels: 0 };
+    const answers:{ [key:string]:any } = { 
+        sum_low_risk_levels: 0 
+    };
     const grid = new Grid(entries);
-    answers.sum_low_risk_levels = grid.low_values
-    .reduce((sum, value)=>sum+value, grid.low_values.length);
+    answers.sum_low_risk_levels = grid.low_points
+    .reduce((sum, point)=>sum+point.value, grid.low_points.length);
     answers.grid = grid;
     return answers;
 }
@@ -79,7 +104,7 @@ const testPart1 = async (input:string):Promise<boolean> =>{
 const solvePart1 = async ():Promise<number> =>{
     const puzzle_input = await puzzle.parseInput();
     const answers = findAnswers(puzzle_input.blocks[0]);
-    return answers.sum_low_risk_levels;//1674 is too high?
+    return answers.sum_low_risk_levels;
 }
 const testPart2 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
@@ -101,6 +126,6 @@ const test_input =
 const part1_correct = await testPart1(test_input);
 const part1 = await solvePart1();
 log('    part 1: ', part1, part1_correct);
-const part2_correct = await testPart2(test_input);
-const part2 = await solvePart2();
-log('    part 2: ', part2, part2_correct);
+// const part2_correct = await testPart2(test_input);
+// const part2 = await solvePart2();
+// log('    part 2: ', part2, part2_correct);
