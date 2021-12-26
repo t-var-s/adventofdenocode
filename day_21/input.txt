@@ -1,1 +1,2 @@
-Puzzle inputs differ by user.  Please log in to get your puzzle input.
+Player 1 starting position: 8
+Player 2 starting position: 10

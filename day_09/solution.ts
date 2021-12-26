@@ -17,7 +17,7 @@ Find all of the low points on your heightmap. What is the sum of the risk levels
 
 */
 
-import { log, logList, intval } from "../tools.ts";
+import { log, intval } from "../tools.ts";
 import { puzzle } from '../puzzle.ts';
 
 class Grid{
