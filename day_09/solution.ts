@@ -24,6 +24,8 @@ class Grid{
     entries:number[][] = []
     points:{ [key:string]:any }[][] = []
     low_points: { [key:string]:any }[] = []
+    basins: { [key:string]: any } = {}
+    explorations:number[][] = []
     constructor(entries:string[][]){
         this.populatePoints(entries);
         this.findLowPoints();
@@ -40,11 +42,30 @@ class Grid{
     w(entries:number[][], from_y:number, from_x:number):number{
         return from_x > 0 ? entries[from_y][from_x-1] : 99; 
     }
+    getDirections(){
+        return [this.n, this.s, this.e, this.w];
+    }
+    getDirectionYX(index:number, from_y:number, from_x:number){
+        const directions_yx = [
+            {y: from_y-1, x: from_x}, 
+            {y: from_y+1, x: from_x}, 
+            {y: from_y, x: from_x+1}, 
+            {y: from_y, x: from_x-1}, 
+        ];
+        return directions_yx[index];
+    }
+    keyToYX(point:{ [key:string]:any }){
+        return point.y + '-' + point.x;
+    }
     populatePoints(entries:string[][]){
         this.entries = entries.reduce((entries, entry)=>{
             entries.push(entry[0].split('').map(intval));
             return entries;
         }, this.entries)
+        this.explorations = entries.reduce((explorations, exploration)=>{
+            explorations.push(exploration[0].split('').map(intval));
+            return explorations;
+        }, this.explorations)
         for(let y=0; y<this.entries.length; y++){ 
             this.points.push([]);
             for(let x=0; x<this.entries[0].length; x++){ 
@@ -52,8 +73,6 @@ class Grid{
                 this.points[y][x] = { 
                     y: y, x: x, 
                     value: this.entries[y][x], 
-                    // n: 99, s: 99, e: 99, w: 99,
-                    basin:{}
                 };
             }
         }
@@ -61,39 +80,49 @@ class Grid{
     findLowPoints(){
         for(let y=0; y<this.entries.length; y++){ 
             for(let x=0; x<this.entries[0].length; x++){ 
-                const lower_directions = [this.n, this.s, this.w, this.e]
-                .filter((direction)=>{
+                const lower_directions = this.getDirections().filter(direction=>{
                     return (direction(this.entries, y, x) <= this.points[y][x].value);
                 });
                 if(lower_directions.length == 0){
-                    this.points[y][x].basin.size = 1;
-                    this.points[y][x].basin.center = { y: y, x: x };
                     this.low_points.push(this.points[y][x]);
                 }
             }
         }
     }
     measureBasins(){
-        this.low_points = this.low_points.map(this.exploreBasin);
+        this.low_points.forEach(low_point=>{
+            this.exploreBasin(low_point, this.keyToYX(low_point));
+        });
     }
-    exploreBasin(point:{ [key:string]:any }){
-        if(point.basin.explored){ 
-            return this.points[point.basin.source.y][point.basin.source.x]; 
+    exploreBasin(point:{ [key:string]:any}, basin_key:string){
+        if(!this.basins[basin_key]){
+            this.basins[basin_key] = { size: 0, value: point.value };
         }
-        const where_to = ['n', 's', 'e', 'w'].filter(direction => point[direction] < 9);
-        if(where_to.length === 0){ return point; }
-        return this.points[point.basin.source.y][point.basin.source.x]; 
+        this.basins[basin_key].size ++;
+        this.explorations[point.y][point.x] = 999;
+        this.getDirections().forEach((direction, index)=>{
+            if(direction(this.explorations, point.y, point.x) > 8){ return false; }
+            this.exploreBasin(this.getDirectionYX(index, point.y, point.x), basin_key);
+        });
+        
     }
 }
 
-const findAnswers = (entries:string[][]) =>{
+const findAnswers = (entries:string[][], measure_basins=false) =>{
     const answers:{ [key:string]:any } = { 
-        sum_low_risk_levels: 0 
+        sum_low_risk_levels: 0,
+        multiply_basin_sizes: 0
     };
     const grid = new Grid(entries);
     answers.sum_low_risk_levels = grid.low_points
     .reduce((sum, point)=>sum+point.value, grid.low_points.length);
-    answers.grid = grid;
+    if(measure_basins){
+        grid.measureBasins();
+        const basin_sizes = Object.values(grid.basins).map(basin=>basin.size)
+        .sort((a, b)=>a-b)
+        .reverse();
+        answers.multiply_basin_sizes = basin_sizes[0]*basin_sizes[1]*basin_sizes[2];
+    }
     return answers;
 }
 const testPart1 = async (input:string):Promise<boolean> =>{
@@ -108,13 +137,13 @@ const solvePart1 = async ():Promise<number> =>{
 }
 const testPart2 = async (input:string):Promise<boolean> =>{
     const puzzle_input = await puzzle.parseInput(input);
-
-    return false;
+    const answers = findAnswers(puzzle_input.blocks[0], true);
+    return answers.multiply_basin_sizes === 1134;
 }
 const solvePart2 = async ():Promise<number> =>{
     const puzzle_input = await puzzle.parseInput();
-
-    return 2;
+    const answers = findAnswers(puzzle_input.blocks[0], true);
+    return answers.multiply_basin_sizes;
 }
 const test_input = 
 `2199943210
@@ -126,6 +155,6 @@ const test_input =
 const part1_correct = await testPart1(test_input);
 const part1 = await solvePart1();
 log('    part 1: ', part1, part1_correct);
-// const part2_correct = await testPart2(test_input);
-// const part2 = await solvePart2();
-// log('    part 2: ', part2, part2_correct);
+const part2_correct = await testPart2(test_input);
+const part2 = await solvePart2();
+log('    part 2: ', part2, part2_correct);
