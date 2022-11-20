@@ -4,17 +4,44 @@ interface AdventDay{
     input: string|false
 }
 const options = {
-    base_url: 'https://adventofcode.com/2021/day/',
+    base_url: 'https://adventofcode.com/%YEAR%/day/',
     solution_filename: 'solution.ts',
     input_filename: 'input.txt',
+    boilerplate_filename: 'boilerplate.txt',
+    year: '2021',
     first_day: 1, last_day: 25, 
-    day_id_prefix: 'day_'
+    day_id_prefix: '',
+    cookie: ''
+}
+const setOptionsFromCommand = async ():Promise<string[]> =>{
+    const errors = [] as string[];
+    if(Deno.args.length !== 2){
+        return ['deno run --allow-net --allow-read --allow-write script.ts [YEAR OF ADVENT OF CODE] [YOUR SESSION COOKIE HERE]']
+    }
+    const year = parseInt(Deno.args[0]);
+    if(isNaN(year)){ errors.push('year must be a number'); }
+    if(year < 2015){ errors.push('year must be after 2015'); }
+    const cookie = Deno.args[1] === 'mycookie' ? options.cookie : Deno.args[1];
+    if(cookie.length < 100){
+        errors.push('cookie must be at least 100 characters long');
+    }
+    if(cookie.indexOf('session') === -1){
+        errors.push('cookie must start with session=');
+    }
+    if(errors.length === 0){
+        options.year = year.toString();
+        options.cookie = cookie;
+    }
+    try{ await Deno.stat(options.year) }
+    catch(_error){ await Deno.mkdir(options.year); }
+    return errors;
 }
 const getAdvent = async ():Promise<void> =>{
     for(let d = options.first_day; d <= options.last_day; d++){
         const day_id = dayIdFromNumber(d);
-        const solution_path = `./${day_id}/${options.solution_filename}`;
-        const input_path = `./${day_id}/${options.input_filename}`;
+        const base_path = `./${options.year}/${day_id}/` ;
+        const solution_path = `${base_path}${options.solution_filename}`;
+        const input_path = `${base_path}${options.input_filename}`;
         try{ await Deno.readFile(solution_path) }
         catch(error){
             if(error.message.indexOf('No such file') === -1){ 
@@ -27,8 +54,8 @@ const getAdvent = async ():Promise<void> =>{
                 break; 
             }
             const comment = commentFromChallenge(day);
-            const solution_text = comment + '\n' + extraSolutionCode();
-            await Deno.mkdir('./' + day_id);
+            const solution_text = await addBoilerplate(comment);
+            await Deno.mkdir(base_path);
             await Deno.writeTextFile(solution_path, solution_text);
             if(day.input){
                 await Deno.writeTextFile(input_path, day.input);
@@ -37,8 +64,8 @@ const getAdvent = async ():Promise<void> =>{
     }
 }
 const getAdventDay = async (day_id:string):Promise<AdventDay> =>{
-    const challenge_url = options.base_url + numberFromDayId(day_id);
-    const cookie = Deno.args.length > 0 ? Deno.args[0] : '';
+    const year_url = options.base_url.replace('%YEAR%', options.year);
+    const challenge_url = year_url + numberFromDayId(day_id);
     const day:AdventDay = { challenge: false, input: false };
     console.log(challenge_url + ' <---');
     try{
@@ -50,7 +77,7 @@ const getAdventDay = async (day_id:string):Promise<AdventDay> =>{
         if(!found_article){ return day; }
         day.challenge = `From ${challenge_url} ${found_article.textContent}\n`;
         const input_response = await fetch(challenge_url + '/input', {
-            headers:{ Cookie: cookie }
+            headers:{ Cookie: options.cookie }
         });
         day.input = await input_response.text();
         return day;
@@ -67,52 +94,10 @@ const commentFromChallenge = (day:AdventDay):string =>{
     const comment_text = day.challenge ? day.challenge : '';
     return `/* ${comment_text.replaceAll('---', '\n')}*/`;
 }
-const  extraSolutionCode = () =>{
-    const code = `
-import { log, logList, intval } from "../tools.ts";
-import { puzzle } from '../puzzle.ts';
-
-
-const findAnswers = (entries:string[][]) =>{
-    const answers = {  };
-
-    log(entries);
-
-    return answers;
+const addBoilerplate = async (code:string):Promise<string> =>{
+    const boilerplate = await Deno.readTextFile(options.boilerplate_filename);
+    return code + '\n' +  boilerplate;
 }
-const testPart1 = async (input:string):Promise<boolean> =>{
-    const puzzle_input = await puzzle.parseInput(input);
-    const answers = findAnswers(puzzle_input.blocks[0]);
-
-    return false;
-}
-const solvePart1 = async ():Promise<number> =>{
-    const puzzle_input = await puzzle.parseInput();
-
-    return 1;
-}
-const testPart2 = async (input:string):Promise<boolean> =>{
-    const puzzle_input = await puzzle.parseInput(input);
-
-    return false;
-}
-const solvePart2 = async ():Promise<number> =>{
-    const puzzle_input = await puzzle.parseInput();
-
-    return 2;
-}
-const test_input = 
-\`
-
-\`;
-
-const part1_correct = await testPart1(test_input);
-const part1 = await solvePart1();
-log('    part 1: ', part1, part1_correct);
-const part2_correct = await testPart2(test_input);
-const part2 = await solvePart2();
-log('    part 2: ', part2, part2_correct);
-`; 
-    return code;
-}
-getAdvent();
+const errors = await setOptionsFromCommand();
+if(errors.length == 0){ getAdvent(); }
+else{ errors.forEach(error=>console.log(error)); }
