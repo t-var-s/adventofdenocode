@@ -1,4 +1,4 @@
-import {DOMParser} from 'https://deno.land/x/deno_dom/deno-dom-wasm.ts';
+import {DOMParser} from './deps.ts';
 interface AdventDay{
     challenge: string|false,
     input: string|false
