@@ -43,11 +43,7 @@ const getAdvent = async ():Promise<void> =>{
         const solution_path = `${base_path}${options.solution_filename}`;
         const input_path = `${base_path}${options.input_filename}`;
         try{ await Deno.readFile(solution_path) }
-        catch(error){
-            if(error.message.indexOf('No such file') === -1){ 
-                console.log(error); 
-                break;
-            }
+        catch(_error){
             const day:AdventDay = await getAdventDay(day_id);
             if(!day.challenge){ 
                 console.log('---> No challenge available yet');
