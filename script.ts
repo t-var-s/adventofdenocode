@@ -44,7 +44,7 @@ const getAdvent = async ():Promise<void> =>{
         const input_path = `${base_path}${options.input_filename}`;
         try{ await Deno.readFile(solution_path) }
         catch(error){
-            if(error.message.indexOf('No such file') === -1){ 
+            if(error.message.indexOf('system cannot find the path specified') === -1){ 
                 console.log(error); 
                 break;
             }
