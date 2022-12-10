@@ -11,7 +11,6 @@ const options = {
 	year: "2021",
 	first_day: 1,
 	last_day: 25,
-	day_id_prefix: "",
 	cookie: "",
 };
 const setOptionsFromCommand = async (): Promise<string[]> => {
@@ -90,11 +89,10 @@ const getAdventDay = async (day_id: string): Promise<AdventDay> => {
 	}
 };
 const dayIdFromNumber = (d: number): string => {
-	return options.day_id_prefix + (d < 10 ? "0" : "") + d;
+	return (d < 10 ? "0" : "") + d;
 };
 const numberFromDayId = (day_id: string): number => {
-	const prefix = options.day_id_prefix;
-	return parseInt(day_id.replace(prefix + "0", "").replace(prefix, ""));
+	return parseInt(day_id.replace(/^0/, ""));
 };
 const commentFromChallenge = (day: AdventDay): string => {
 	const comment_text = day.challenge ? day.challenge : "";
