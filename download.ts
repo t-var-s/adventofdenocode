@@ -102,6 +102,7 @@ const addBoilerplate = async (code: string): Promise<string> => {
 	const boilerplate = await Deno.readTextFile(options.boilerplate_filename);
 	return boilerplate.replace('%COMMENT%', code);
 };
+console.log(Colors.green('_.~"~._.~"~Advent of Deno Code~"~._.~"~._'));
 const errors = await setOptionsFromCommand();
 if (errors.length == 0) getAdvent();
 else errors.forEach((error) => console.log(Colors.brightRed(error)));
