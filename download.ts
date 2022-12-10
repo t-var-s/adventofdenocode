@@ -18,7 +18,7 @@ const setOptionsFromCommand = async (): Promise<string[]> => {
 	const errors = [] as string[];
 	if (Deno.args.length !== 2) {
 		return [
-			"deno run --allow-net --allow-read --allow-write script.ts [YEAR OF ADVENT OF CODE] [YOUR SESSION COOKIE HERE]",
+			"deno run --allow-net --allow-read --allow-write download.ts [YEAR OF ADVENT OF CODE] [YOUR SESSION COOKIE HERE]",
 		];
 	}
 	const year = parseInt(Deno.args[0]);
