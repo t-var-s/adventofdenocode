@@ -1,4 +1,4 @@
-import { DOMParser } from "./deps.ts";
+import { DOMParser, Colors } from "./deps.ts";
 interface AdventDay {
 	challenge: string | false;
 	input: string | false;
@@ -52,7 +52,7 @@ const getAdvent = async (): Promise<void> => {
 		} catch (_error) {
 			const day: AdventDay = await getAdventDay(day_id);
 			if (!day.challenge) {
-				console.log("---> No challenge available yet");
+				console.log(Colors.yellow("---> No challenge available yet"));
 				break;
 			}
 			const comment = commentFromChallenge(day);
@@ -69,7 +69,7 @@ const getAdventDay = async (day_id: string): Promise<AdventDay> => {
 	const year_url = options.base_url.replace("%YEAR%", options.year);
 	const challenge_url = year_url + numberFromDayId(day_id);
 	const day: AdventDay = { challenge: false, input: false };
-	console.log(challenge_url + " <---");
+	console.log(Colors.cyan(challenge_url) + Colors.yellow(" <---"));
 	try {
 		const challenge_response = await fetch(challenge_url);
 		const html = await challenge_response.text();
@@ -104,4 +104,4 @@ const addBoilerplate = async (code: string): Promise<string> => {
 };
 const errors = await setOptionsFromCommand();
 if (errors.length == 0) getAdvent();
-else errors.forEach((error) => console.log(error));
+else errors.forEach((error) => console.log(Colors.brightRed(error)));

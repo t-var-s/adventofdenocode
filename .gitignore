@@ -6,3 +6,4 @@
 *.code-workspace
 .history/
 .DS_Store
+deno.lock
