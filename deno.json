@@ -1,4 +1,9 @@
 {
+  "lint": {
+    "rules": {
+      "exclude": ["camelcase", "no-explicit-any"]
+    }
+    },
 	"fmt": {
 		"options": {
 			"useTabs": true,
