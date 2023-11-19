@@ -6,12 +6,13 @@ interface AdventDay {
 const options = {
 	base_url: "https://adventofcode.com/%YEAR%/day/",
 	solution_filename: "solution.js",
+	challenge_filename: "challenge.txt",
 	input_filename: "input.txt",
 	boilerplate_filename: "boilerplate.js",
 	year: "2021",
 	first_day: 1,
 	last_day: 25,
-	cookie: "session=53616c7465645f5fd44b6ed225c43c124da6f5e4bd65eb26b6b9404afe3cde0b124cb898f16c0dc0a7e62b780696d647c14e936770216e0f006bbba6385fac3b",
+	cookie: "",
 };
 const setOptionsFromCommand = async (): Promise<string[]> => {
 	const errors = [] as string[];
@@ -50,6 +51,7 @@ const getAdvent = async (): Promise<void> => {
 		const day_id = dayIdFromNumber(d);
 		const base_path = `./${options.year}/${day_id}/`;
 		const solution_path = `${base_path}${options.solution_filename}`;
+		const challenge_path = `${base_path}${options.challenge_filename}`;
 		const input_path = `${base_path}${options.input_filename}`;
 		try {
 			await Deno.readFile(solution_path);
@@ -59,10 +61,11 @@ const getAdvent = async (): Promise<void> => {
 				console.log(Colors.yellow("---> No challenge available yet"));
 				break;
 			}
-			const comment = commentFromChallenge(day);
-			const solution_text = await addBoilerplate(comment);
+			const challenge = getChallenge(day);
+			const boilerplate = await Deno.readTextFile(options.boilerplate_filename);
 			await Deno.mkdir(base_path);
-			await Deno.writeTextFile(solution_path, solution_text);
+			await Deno.writeTextFile(solution_path, boilerplate);
+			await Deno.writeTextFile(challenge_path, challenge);
 			if (day.input) {
 				await Deno.writeTextFile(input_path, day.input);
 			}
@@ -98,13 +101,9 @@ const dayIdFromNumber = (d: number): string => {
 const numberFromDayId = (day_id: string): number => {
 	return parseInt(day_id.replace(/^0/, ""));
 };
-const commentFromChallenge = (day: AdventDay): string => {
-	const comment_text = day.challenge ? day.challenge : "";
-	return comment_text.replaceAll("---", "\n");
-};
-const addBoilerplate = async (code: string): Promise<string> => {
-	const boilerplate = await Deno.readTextFile(options.boilerplate_filename);
-	return boilerplate.replace('%COMMENT%', code);
+const getChallenge = (day: AdventDay): string => {
+	const text = day.challenge ? day.challenge : "";
+	return text.replaceAll("---", "\n");
 };
 console.log(Colors.green('_.~"~._.~"~Advent of Deno Code~"~._.~"~._'));
 const errors = await setOptionsFromCommand();

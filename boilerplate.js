@@ -6,9 +6,6 @@ const tests = {
 	first: 1,
 	second: 0
 };
-/*
-%COMMENT%
-*/
 
 import { intval, log, logList } from "../../tools.ts";
 import { puzzle } from "../../puzzle.ts";
