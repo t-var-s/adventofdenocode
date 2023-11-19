@@ -5,17 +5,17 @@ interface AdventDay {
 }
 const options = {
 	base_url: "https://adventofcode.com/%YEAR%/day/",
-	solution_filename: "solution.ts",
+	solution_filename: "solution.js",
 	input_filename: "input.txt",
-	boilerplate_filename: "boilerplate.ts",
+	boilerplate_filename: "boilerplate.js",
 	year: "2021",
 	first_day: 1,
 	last_day: 25,
-	cookie: "",
+	cookie: "session=53616c7465645f5fd44b6ed225c43c124da6f5e4bd65eb26b6b9404afe3cde0b124cb898f16c0dc0a7e62b780696d647c14e936770216e0f006bbba6385fac3b",
 };
 const setOptionsFromCommand = async (): Promise<string[]> => {
 	const errors = [] as string[];
-	if (Deno.args.length !== 2) {
+	if (Deno.args.length < 2) {
 		return [
 			"deno run --allow-net --allow-read --allow-write download.ts [YEAR OF ADVENT OF CODE] [YOUR SESSION COOKIE HERE]",
 		];
@@ -29,6 +29,10 @@ const setOptionsFromCommand = async (): Promise<string[]> => {
 	}
 	if (cookie.indexOf("session") === -1) {
 		errors.push("cookie must start with session=");
+	}
+	if(Deno.args[2]?.toLowerCase() === 'ts'){
+		options.boilerplate_filename = options.boilerplate_filename.replace('.js', '.ts');
+		options.solution_filename = options.solution_filename.replace('.js', '.ts');
 	}
 	if (errors.length === 0) {
 		options.year = year.toString();
