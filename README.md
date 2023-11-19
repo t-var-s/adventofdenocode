@@ -10,7 +10,6 @@ For my first Advent of Code, to warm-up and start learning Typescript and Deno, 
 
 You can see any relevant options in the `download.ts` file, including file names. By default, the script copies a Javascript boilerplate for each day, but you can add a `ts` argument to copy the Typescript file instead (or just change that default option).
 
-```
 
 https://adventofcode.com
 
