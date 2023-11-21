@@ -8,7 +8,7 @@ deno run --allow-net --allow-read --allow-write download.ts [YEAR OF ADVENT OF C
 
 For my first Advent of Code, to warm-up and start learning Typescript and Deno, I made a script to download the input and the first challenge for each day. Now it's being improved every year. Run the command above with the year and your session cookie from adventofcode.com - this will create a subfolder on the current directory for each available day. Besides the `challenge.txt` and `input.txt`, an initial `solution.js` file will be saved with some boilerplate code that I've found to be useful as all puzzles involve handling some line-by-line input.
 
-You can see any relevant options in the `download.ts` file, including file names. By default, the script copies a Javascript boilerplate for each day, but you can add a `ts` argument to copy the Typescript file instead (or just change that default option).
+You can see any relevant options in the `download.ts` file, including file names. By default, the script copies a Javascript boilerplate for each day, but you can add a `ts` argument to copy the Typescript file instead (or just change that default option). You can even use this with any other programming language, specially if you already have your own helpful imports. My `tools.ts` only has a couple of ways to log anything into the terminal and common AoC things like converting text into a number. Another common issue is parsing lines that have some structure, which `puzzle.ts` tries to handle in general by putting sections of text into relevant blocks. 
 
 
 https://adventofcode.com
